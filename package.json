@@ -1,0 +1,23 @@
+{
+  "name": "mesto-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "start": "node app.js"
+  },
+  "keywords": [],
+  "author": "Tamara Andreeva",
+  "license": "ISC",
+  "dependencies": {
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.10.0",
+    "eslint-plugin-react": "^7.21.3",
+    "nodemon": "^2.0.4"
+  }
+}

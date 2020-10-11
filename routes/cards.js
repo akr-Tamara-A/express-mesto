@@ -7,9 +7,13 @@ const jsonDataPath = path.join(__dirname, '..', 'data', 'cards.json');
 
 /** Обработка запроса карточек */
 router.get('/cards', (req, res) => {
-  readFile(jsonDataPath).then((data) => {
-    res.send(data);
-  });
+  readFile(jsonDataPath)
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 module.exports = router;

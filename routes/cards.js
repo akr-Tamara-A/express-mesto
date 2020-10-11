@@ -12,7 +12,7 @@ router.get('/cards', (req, res) => {
       res.send(data);
     })
     .catch((err) => {
-      console.log(err);
+      res.status(500).send({ message: 'Ошибка на сервере' });
     });
 });
 

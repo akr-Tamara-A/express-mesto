@@ -12,7 +12,7 @@ router.get('/users', (req, res) => {
       res.send(data);
     })
     .catch((err) => {
-      console.log(err);
+      res.status(500).send({ message: 'Ошибка на сервере' });
     });
 });
 
@@ -28,7 +28,7 @@ router.get('/users/:id', (req, res) => {
       res.send(requestedUser);
     })
     .catch((err) => {
-      console.log(err);
+      res.status(500).send({ message: 'Ошибка на сервере' });
     });
 });
 

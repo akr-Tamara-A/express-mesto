@@ -1,31 +1,31 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
 
-const cardSchema = new mongoose.Schema({
+const cardSchema = new Schema({
   title: {
-    name: String,
-    minlength: 2,
-    maxlength: 30,
-    required: true,
+    type: String,
+    minlength: [2, 'Слишком короткое название'],
+    maxlength: [30, 'Слишком длинное название'],
+    required: [true, 'Обязательное поле'],
   },
   link: {
-    name: String,
-    link: /https*:\/\/(w{3}\.)*[a-z0-9\-/.]+#*$/gi,
-    required: true,
-  },
-  owner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
-    required: true,
-  },
-  likes: {
-    type: mongoose.Schema.Types.ObjectId, /* !!!!!!!! */
-    default: [],
-    required: true,
+    type: String,
+    match: [/^https?:\/\/\w+#?/gi, 'Неправильная ссылка'],
+    required: [true, 'Обязательное поле'],
   },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: 'user',
+    required: true,
+  },
+  likes: [{
+    type: Schema.Types.ObjectId,
+    ref: 'user',
+    default: [],
+  }],
 });
 
-module.exports = mongoose.model('card', cardSchema);
+module.exports = model('card', cardSchema);

@@ -1,20 +1,22 @@
 const router = require('express').Router();
-const path = require('path');
 
-const readFile = require('../utils/readFile.js');
+const {
+  getCards,
+  deleteCard,
+  createCard,
+  getCard,
+} = require('../controllers/cards');
 
-const jsonDataPath = path.join(__dirname, '..', 'data', 'cards.json');
+/** Обработка запроса всех карточек */
+router.get('/cards', getCards);
 
-/** Обработка запроса карточек */
-router.get('/cards', (req, res) => {
-  readFile(jsonDataPath)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send({ message: 'Ошибка на сервере' });
-    });
-});
+/** Создание карточки */
+router.post('/cards', createCard);
+
+/** Обработка удаления отдельной карточки */
+router.delete('/cards/:cardId', deleteCard);
+
+/** Обработка удаления отдельной карточки */
+router.get('/cards/:cardId', getCard);
 
 module.exports = router;

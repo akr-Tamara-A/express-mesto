@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path');
 const bodyParser = require('body-parser');
 
 const routes = require('./routes/index');
@@ -18,8 +17,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
   useCreateIndex: true,
   useFindAndModify: false,
 });
-
-app.use(express.static(path.join(__dirname, 'public')));
 
 /** Обработка запросов */
 app.use(routes);

@@ -1,5 +1,6 @@
 const User = require('../models/user');
 
+/** Контролер запроса всех пользователей */
 module.exports.getUsers = async (req, res) => {
   try {
     const users = await User.find({});
@@ -9,6 +10,7 @@ module.exports.getUsers = async (req, res) => {
   }
 };
 
+/** Контролер запроса одного пользователя */
 module.exports.getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -21,6 +23,7 @@ module.exports.getUser = async (req, res) => {
   }
 };
 
+/** Контролер создания нового пользователя */
 module.exports.createUser = async (req, res) => {
   try {
     const newUser = new User({ ...req.body });
@@ -38,6 +41,7 @@ module.exports.createUser = async (req, res) => {
   }
 };
 
+/** Контролер удаления пользователя */
 module.exports.deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndRemove(req.params.id);

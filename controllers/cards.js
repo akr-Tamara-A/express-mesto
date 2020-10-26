@@ -1,5 +1,6 @@
 const Card = require('../models/card');
 
+/** Контролер запроса всех карточек */
 module.exports.getCards = async (req, res) => {
   try {
     const cards = await Card.find({});
@@ -9,6 +10,7 @@ module.exports.getCards = async (req, res) => {
   }
 };
 
+/** Контролер запроса одной карточки */
 module.exports.getCard = async (req, res) => {
   try {
     const card = await Card.findById(req.params.id);
@@ -19,6 +21,7 @@ module.exports.getCard = async (req, res) => {
   }
 };
 
+/** Контролер создания новой карточки */
 module.exports.createCard = async (req, res) => {
   try {
     const newCard = new Card({ ...req.body, owner: req.user._id });
@@ -36,6 +39,7 @@ module.exports.createCard = async (req, res) => {
   }
 };
 
+/** Контролер удаления карточки */
 module.exports.deleteCard = async (req, res) => {
   try {
     const card = await Card.findByIdAndRemove(req.params.id);

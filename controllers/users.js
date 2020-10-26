@@ -15,7 +15,7 @@ module.exports.getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
-    if (!user) res.status(400).send({ message: 'Такой пользователь не существует' });
+    if (!user) res.status(404).send({ message: 'Такой пользователь не существует' });
 
     res.send({ data: user });
   } catch (error) {
@@ -46,7 +46,7 @@ module.exports.deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndRemove(req.params.id);
 
-    if (!user) res.status(400).send({ message: 'Такой пользователь не существует' });
+    if (!user) res.status(404).send({ message: 'Такой пользователь не существует' });
 
     res.send({ data: user });
   } catch (error) {

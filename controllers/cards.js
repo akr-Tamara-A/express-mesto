@@ -14,7 +14,7 @@ module.exports.getCards = async (req, res) => {
 module.exports.getCard = async (req, res) => {
   try {
     const card = await Card.findById(req.params.cardId);
-    if (!card) res.status(400).send({ message: 'Такая карта не существует' });
+    if (!card) res.status(404).send({ message: 'Такая карта не существует' });
     res.send({ data: card });
   } catch (error) {
     res.status(500).send({ message: 'Ошибка на сервере' });
@@ -43,7 +43,7 @@ module.exports.createCard = async (req, res) => {
 module.exports.deleteCard = async (req, res) => {
   try {
     const card = await Card.findByIdAndRemove(req.params.cardId);
-    if (!card) res.status(400).send({ message: 'Такая карта не существует' });
+    if (!card) res.status(404).send({ message: 'Такая карта не существует' });
     res.send({ data: card });
   } catch (error) {
     res.status(500).send({ message: 'Ошибка на сервере' });

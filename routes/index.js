@@ -9,7 +9,7 @@ router.use('/', usersRouter);
 /** Временная авторизация */
 router.use((req, res, next) => {
   req.user = {
-    _id: '5f968b0a9748dd1cc0d19487',
+    _id: '5f96c454cc867f18e45ecb91',
   };
 
   next();

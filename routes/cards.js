@@ -16,7 +16,7 @@ router.post('/cards', createCard);
 /** Обработка удаления отдельной карточки */
 router.delete('/cards/:cardId', deleteCard);
 
-/** Обработка удаления отдельной карточки */
+/** Обработка запроса отдельной карточки */
 router.get('/cards/:cardId', getCard);
 
 module.exports = router;

@@ -13,7 +13,7 @@ module.exports.getCards = async (req, res) => {
 /** Контролер запроса одной карточки */
 module.exports.getCard = async (req, res) => {
   try {
-    const card = await Card.findById(req.params.id);
+    const card = await Card.findById(req.params.cardId);
     if (!card) res.status(400).send({ message: 'Такая карта не существует' });
     res.send({ data: card });
   } catch (error) {
@@ -42,7 +42,7 @@ module.exports.createCard = async (req, res) => {
 /** Контролер удаления карточки */
 module.exports.deleteCard = async (req, res) => {
   try {
-    const card = await Card.findByIdAndRemove(req.params.id);
+    const card = await Card.findByIdAndRemove(req.params.cardId);
     if (!card) res.status(400).send({ message: 'Такая карта не существует' });
     res.send({ data: card });
   } catch (error) {

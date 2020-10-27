@@ -3,7 +3,7 @@ const Card = require('../models/card');
 /** Контролер запроса всех карточек */
 module.exports.getCards = async (req, res) => {
   try {
-    const cards = await Card.find({});
+    const cards = await Card.find({}).populate('user');
     res.send({ data: cards });
   } catch (error) {
     res.status(500).send({ message: 'Ошибка на сервере' });

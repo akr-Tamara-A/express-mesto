@@ -3,9 +3,6 @@ const router = require('express').Router();
 const usersRouter = require('./users');
 const cardsRouter = require('./cards');
 
-/** Обработка запросов пользователя */
-router.use('/', usersRouter);
-
 /** Временная авторизация */
 router.use((req, res, next) => {
   req.user = {
@@ -14,6 +11,9 @@ router.use((req, res, next) => {
 
   next();
 });
+
+/** Обработка запросов пользователя */
+router.use('/', usersRouter);
 
 /** Обработка запросов карточек */
 router.use('/', cardsRouter);

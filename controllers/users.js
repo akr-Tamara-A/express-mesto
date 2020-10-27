@@ -53,3 +53,27 @@ module.exports.deleteUser = async (req, res) => {
     res.status(500).send({ message: 'Ошибка на сервере' });
   }
 };
+
+module.exports.patchUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate({ _id: req.params.id }, req.body);
+
+    if (!user) res.status(404).send({ message: 'Такой пользователь не существует' });
+
+    res.send({ data: user });
+  } catch (error) {
+    res.status(500).send({ message: 'Ошибка на сервере' });
+  }
+};
+
+module.exports.patchUserAvatar = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate({ _id: req.params.id }, req.body);
+
+    if (!user) res.status(404).send({ message: 'Такой пользователь не существует' });
+
+    res.send({ data: user });
+  } catch (error) {
+    res.status(500).send({ message: 'Ошибка на сервере' });
+  }
+};

@@ -15,11 +15,13 @@ module.exports.getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
-    if (!user) res.status(404).send({ message: 'Такой пользователь не существует' });
-
-    res.send({ data: user });
+    if (!user) {
+      res.status(404).send({ message: 'Такой пользователь не существует' });
+    } else {
+      res.send({ data: user });
+    }
   } catch (error) {
-    res.status(500).send({ message: 'Ошибка на сервере' });
+    res.status(404).send({ message: 'Неподходящий формат ID' });
   }
 };
 
@@ -32,10 +34,10 @@ module.exports.createUser = async (req, res) => {
     if (error) {
       const errorMessage = error.message;
       res.status(400).send({ message: errorMessage });
+    } else {
+      await newUser.save();
+      res.send({ data: newUser });
     }
-
-    await newUser.save();
-    res.send({ data: newUser });
   } catch (error) {
     res.status(500).send({ message: 'Ошибка на сервере' });
   }
@@ -46,21 +48,29 @@ module.exports.deleteUser = async (req, res) => {
   try {
     const user = await User.findByIdAndRemove(req.params.id);
 
-    if (!user) res.status(404).send({ message: 'Такой пользователь не существует' });
-
-    res.send({ data: user });
+    if (!user) {
+      res.status(404).send({ message: 'Такой пользователь не существует' });
+    } else {
+      res.send({ data: user });
+    }
   } catch (error) {
-    res.status(500).send({ message: 'Ошибка на сервере' });
+    res.status(404).send({ message: 'Неподходящий формат ID' });
   }
 };
 
 module.exports.patchUser = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate({ _id: req.params.id }, req.body);
+    const user = await User.findByIdAndUpdate(
+      { _id: req.params.id },
+      req.body,
+      { new: true },
+    );
 
-    if (!user) res.status(404).send({ message: 'Такой пользователь не существует' });
-
-    res.send({ data: user });
+    if (!user) {
+      res.status(404).send({ message: 'Такой пользователь не существует' });
+    } else {
+      res.send({ data: user });
+    }
   } catch (error) {
     res.status(500).send({ message: 'Ошибка на сервере' });
   }
@@ -68,11 +78,17 @@ module.exports.patchUser = async (req, res) => {
 
 module.exports.patchUserAvatar = async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate({ _id: req.params.id }, req.body);
+    const user = await User.findByIdAndUpdate(
+      { _id: req.params.id },
+      req.body,
+      { new: true },
+    );
 
-    if (!user) res.status(404).send({ message: 'Такой пользователь не существует' });
-
-    res.send({ data: user });
+    if (!user) {
+      res.status(404).send({ message: 'Такой пользователь не существует' });
+    } else {
+      res.send({ data: user });
+    }
   } catch (error) {
     res.status(500).send({ message: 'Ошибка на сервере' });
   }

@@ -1,7 +1,7 @@
 const { Schema, model } = require('mongoose');
 
 const cardSchema = new Schema({
-  title: {
+  name: {
     type: String,
     minlength: [2, 'Слишком короткое название'],
     maxlength: [30, 'Слишком длинное название'],

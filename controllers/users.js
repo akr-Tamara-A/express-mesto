@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
 /** Контролер запроса всех пользователей */
@@ -28,7 +29,22 @@ module.exports.getUser = async (req, res) => {
 /** Контролер создания нового пользователя */
 module.exports.createUser = async (req, res) => {
   try {
-    const newUser = new User({ ...req.body });
+    const hash = await bcrypt.hash(req.body.password, 10);
+    // await User.init();
+
+    // const init = await User.init();
+    // if (init) {
+    //   console.log('init');
+    //   console.log(init);
+    // }
+    const newUser = await new User({
+      ...req.body,
+      password: hash,
+    });
+    // const newUser = new User({
+    //   ...req.body,
+    //   password: hash,
+    // });
 
     const error = newUser.validateSync();
     if (error) {
@@ -39,7 +55,13 @@ module.exports.createUser = async (req, res) => {
       res.send({ data: newUser });
     }
   } catch (error) {
-    res.status(500).send({ message: 'Ошибка на сервере' });
+    // console.log(error);
+    // console.log(error.codeName);
+    // if (error.codeName === 'DublicateKey') {
+    //   res.status(400).send({ message: 'Такой email уже используется' });
+    // } else {
+      res.status(500).send({ message: 'Ошибка на сервере' });
+    // }
   }
 };
 

@@ -12,7 +12,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 /** подключаемся к серверу mongo */
-mongoose.connect('mongodb://localhost:27017/mestodb', {
+mongoose.connect('mongodb://localhost:27017/mestodb2', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,

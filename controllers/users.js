@@ -30,39 +30,49 @@ module.exports.getUser = async (req, res) => {
 module.exports.createUser = async (req, res) => {
   try {
     const hash = await bcrypt.hash(req.body.password, 10);
-    // await User.init();
-
-    // const init = await User.init();
-    // if (init) {
-    //   console.log('init');
-    //   console.log(init);
-    // }
     const newUser = await new User({
       ...req.body,
       password: hash,
-    });
-    // const newUser = new User({
-    //   ...req.body,
-    //   password: hash,
-    // });
+    }, (err) => Promise.reject(new Error(err)));
 
-    const error = newUser.validateSync();
-    if (error) {
-      const errorMessage = error.message;
+    const validateError = newUser.validateSync();
+    if (validateError) {
+      const errorMessage = validateError.message;
       res.status(400).send({ message: errorMessage });
     } else {
       await newUser.save();
       res.send({ data: newUser });
     }
   } catch (error) {
-    // console.log(error);
-    // console.log(error.codeName);
-    // if (error.codeName === 'DublicateKey') {
-    //   res.status(400).send({ message: 'Такой email уже используется' });
-    // } else {
+    if (error.name === 'MongoError') {
+      res.status(400).send({ message: 'Такой email уже используется' });
+    } else {
       res.status(500).send({ message: 'Ошибка на сервере' });
-    // }
+    }
   }
+};
+
+module.exports.loginUser = (req, res) => {
+  const { email, password } = req.body;
+
+  User.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      bcrypt.compare(password, user.password);
+    })
+    .then((matched) => {
+      if (!matched) {
+        Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      res.send({ message: 'Всё верно!' });
+    })
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
 };
 
 /** Контролер удаления пользователя */

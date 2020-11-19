@@ -3,8 +3,6 @@ const router = require('express').Router();
 const {
   getUsers,
   getUser,
-  createUser,
-  loginUser,
   deleteUser,
   patchUser,
   patchUserAvatar,
@@ -15,15 +13,6 @@ router.get('/users', getUsers);
 
 /** Обработка запроса отдельного пользователя */
 router.get('/users/:id', getUser);
-
-/** Создание пользователя */
-// router.post('/users', createUser);
-
-/** Обработка логина пользователя */
-router.post('/signin', loginUser);
-
-/** Обработка регистрации пользователя */
-router.post('/signup', createUser);
 
 /** Обработка удаления отдельного пользователя */
 router.delete('/users/:id', deleteUser);

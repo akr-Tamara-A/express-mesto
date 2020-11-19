@@ -1,5 +1,6 @@
 const router = require('express').Router();
 
+const { createUser, loginUser } = require('../controllers/users');
 const usersRouter = require('./users');
 const cardsRouter = require('./cards');
 
@@ -11,6 +12,12 @@ router.use((req, res, next) => {
 
   next();
 });
+
+/** Обработка логина пользователя */
+router.post('/signin', loginUser);
+
+/** Обработка регистрации пользователя */
+router.post('/signup', createUser);
 
 /** Обработка запросов пользователя */
 router.use('/', usersRouter);

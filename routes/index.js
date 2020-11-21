@@ -4,20 +4,16 @@ const { createUser, loginUser } = require('../controllers/users');
 const usersRouter = require('./users');
 const cardsRouter = require('./cards');
 
-/** Временная авторизация */
-router.use((req, res, next) => {
-  req.user = {
-    _id: '5f96c454cc867f18e45ecb91',
-  };
-
-  next();
-});
+const auth = require('../middlewares/auth');
 
 /** Обработка логина пользователя */
 router.post('/signin', loginUser);
 
 /** Обработка регистрации пользователя */
 router.post('/signup', createUser);
+
+/** Мидлвэр для авторизации пользователя */
+router.use(auth);
 
 /** Обработка запросов пользователя */
 router.use('/', usersRouter);

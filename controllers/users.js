@@ -13,10 +13,10 @@ module.exports.getUsers = async (req, res) => {
   }
 };
 
-/** Контролер запроса одного пользователя */
+/** Контролер запроса пользователя */
 module.exports.getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id).select('+password');
 
     if (!user) {
       res.status(404).send({ message: 'Такой пользователь не существует' });
@@ -30,30 +30,36 @@ module.exports.getUser = async (req, res) => {
 
 /** Контролер создания нового пользователя */
 module.exports.createUser = async (req, res) => {
+  const { email, password } = req.body;
+  if (!password) {
+    res.status(400).send({ message: 'Невалидные данные' });
+    return;
+  }
   try {
-    const hash = await bcrypt.hash(req.body.password, 10);
+    const hash = await bcrypt.hash(password, 10);
+
     const newUser = await new User({
-      ...req.body,
+      email,
       password: hash,
     }, (err) => Promise.reject(new Error(err)));
 
     const validateError = newUser.validateSync();
     if (validateError) {
-      const errorMessage = validateError.message;
-      res.status(400).send({ message: errorMessage });
+      res.status(400).send({ message: validateError.message });
     } else {
       await newUser.save();
       res.send({ data: newUser });
     }
   } catch (error) {
     if (error.name === 'MongoError') {
-      res.status(400).send({ message: 'Такой email уже используется' });
+      res.status(409).send({ message: 'Такой email уже используется' });
     } else {
       res.status(500).send({ message: 'Ошибка на сервере' });
     }
   }
 };
 
+/** Контролер логина пользователя */
 module.exports.loginUser = (req, res) => {
   const { email, password } = req.body;
 
@@ -66,6 +72,8 @@ module.exports.loginUser = (req, res) => {
       });
     })
     .catch((err) => {
+      console.log('------------------------ 4');
+      console.log(err);
       res.status(401).send({ message: err.message });
     });
 };

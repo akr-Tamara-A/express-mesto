@@ -16,7 +16,7 @@ module.exports.getUsers = async (req, res) => {
 /** Контролер запроса пользователя */
 module.exports.getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('+password');
+    const user = await User.findById(req.user._id).select('+password');
 
     if (!user) {
       res.status(404).send({ message: 'Такой пользователь не существует' });

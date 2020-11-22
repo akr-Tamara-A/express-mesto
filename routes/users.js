@@ -12,7 +12,7 @@ const {
 router.get('/users', getUsers);
 
 /** Обработка запроса отдельного пользователя */
-router.get('/users/:id', getUser);
+router.get('/users/me', getUser);
 
 /** Обработка удаления отдельного пользователя */
 router.delete('/users/:id', deleteUser);

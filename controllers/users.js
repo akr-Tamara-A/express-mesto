@@ -44,6 +44,7 @@ module.exports.createUser = async (req, res) => {
     }, (err) => Promise.reject(new Error(err)));
 
     const validateError = newUser.validateSync();
+
     if (validateError) {
       res.status(400).send({ message: validateError.message });
     } else {
@@ -72,8 +73,6 @@ module.exports.loginUser = (req, res) => {
       });
     })
     .catch((err) => {
-      console.log('------------------------ 4');
-      console.log(err);
       res.status(401).send({ message: err.message });
     });
 };
@@ -93,6 +92,7 @@ module.exports.deleteUser = async (req, res) => {
   }
 };
 
+/** Контролер редактирования данных пользователя */
 module.exports.patchUser = async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
@@ -111,6 +111,7 @@ module.exports.patchUser = async (req, res) => {
   }
 };
 
+/** Контролер редактирования аватара пользователя */
 module.exports.patchUserAvatar = async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(

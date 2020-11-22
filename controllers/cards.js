@@ -45,11 +45,19 @@ module.exports.createCard = async (req, res) => {
 /** Контролер удаления карточки */
 module.exports.deleteCard = async (req, res) => {
   try {
-    const card = await Card.findByIdAndRemove(req.params.cardId);
+    const card = await Card.findById(req.params.cardId).populate('user');
     if (!card) {
       res.status(404).send({ message: 'Такая карта не существует' });
     } else {
-      res.send({ data: card });
+      const user = req.user._id;
+      const cardOwner = JSON.stringify(card.owner).slice(1, -1);
+
+      if (user !== cardOwner) {
+        res.status(403).send({ message: 'Это чужая карта' });
+      } else {
+        const cardForDel = await Card.findByIdAndRemove({ _id: req.params.cardId });
+        res.send({ data: cardForDel });
+      }
     }
   } catch (error) {
     res.status(404).send({ message: 'Неподходящий формат ID карточки' });

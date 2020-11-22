@@ -1,7 +1,7 @@
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
 const User = require('../models/user');
+const { genereteToken } = require('../utils/genereteToken');
 
 /** Контролер запроса всех пользователей */
 module.exports.getUsers = async (req, res) => {
@@ -67,9 +67,7 @@ module.exports.loginUser = (req, res) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       res.send({
-        token: jwt.sign({ _id: user._id }, 'super-strong-secret', {
-          expiresIn: '7d',
-        }),
+        token: genereteToken(user._id),
       });
     })
     .catch((err) => {

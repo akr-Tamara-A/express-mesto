@@ -15,11 +15,11 @@ router.get('/cards', getCards);
 /** Создание карточки */
 router.post('/cards', createCard);
 
-/** Обработка удаления отдельной карточки */
-router.delete('/cards/:cardId', deleteCard);
-
 /** Обработка запроса отдельной карточки */
 router.get('/cards/:cardId', getCard);
+
+/** Обработка удаления отдельной карточки */
+router.delete('/cards/:cardId', deleteCard);
 
 /** Обработка добавления лайка карточке */
 router.put('/cards/:cardId/likes', addLike);

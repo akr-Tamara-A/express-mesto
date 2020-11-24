@@ -1,101 +1,123 @@
 const Card = require('../models/card');
+const NotFoundError = require('../errors/NotFoundError');
+const ForbiddenError = require('../errors/ForbiddenError');
+const BadRequestError = require('../errors/BadRequestError');
+const { regIdCheck } = require('../utils/utils');
 
 /** Контролер запроса всех карточек */
-module.exports.getCards = async (req, res) => {
+module.exports.getCards = async (req, res, next) => {
   try {
     const cards = await Card.find({}).populate('user');
     res.send({ data: cards });
-  } catch (error) {
-    res.status(500).send({ message: 'Ошибка на сервере' });
-  }
-};
-
-/** Контролер запроса одной карточки */
-module.exports.getCard = async (req, res) => {
-  try {
-    const card = await Card.findById(req.params.cardId);
-    if (!card) {
-      res.status(404).send({ message: 'Такая карта не существует' });
-    } else {
-      res.send({ data: card });
-    }
-  } catch (error) {
-    res.status(404).send({ message: 'Неподходящий формат ID карточки' });
+  } catch (err) {
+    next(err);
   }
 };
 
 /** Контролер создания новой карточки */
-module.exports.createCard = async (req, res) => {
+module.exports.createCard = async (req, res, next) => {
   try {
     const newCard = new Card({ ...req.body, owner: req.user._id });
 
     const error = newCard.validateSync();
     if (error) {
-      const errorMessage = error.message;
-      res.status(400).send({ message: errorMessage });
+      throw new BadRequestError('Невалидные данные');
     } else {
       await newCard.save();
       res.send({ data: newCard });
     }
-  } catch (error) {
-    res.status(500).send(error);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/** Контролер запроса одной карточки */
+module.exports.getCard = async (req, res, next) => {
+  try {
+    if (!regIdCheck(req.params.cardId)) {
+      throw new NotFoundError('Неподходящий формат ID карточки');
+    } else {
+      const card = await Card.findById(req.params.cardId);
+      if (!card) {
+        throw new NotFoundError('Такая карта не существует');
+      } else {
+        res.send({ data: card });
+      }
+    }
+  } catch (err) {
+    next(err);
   }
 };
 
 /** Контролер удаления карточки */
-module.exports.deleteCard = async (req, res) => {
+module.exports.deleteCard = async (req, res, next) => {
   try {
-    const card = await Card.findById(req.params.cardId).populate('user');
-    if (!card) {
-      res.status(404).send({ message: 'Такая карта не существует' });
+    if (!regIdCheck(req.params.cardId)) {
+      throw new NotFoundError('Неподходящий формат ID карточки');
     } else {
-      const user = req.user._id;
-      const cardOwner = JSON.stringify(card.owner).slice(1, -1);
-
-      if (user !== cardOwner) {
-        res.status(403).send({ message: 'Это чужая карта' });
+      const card = await Card.findById(req.params.cardId).populate('user');
+      if (!card) {
+        throw new NotFoundError('Такая карта не существует');
       } else {
-        const cardForDel = await Card.findByIdAndRemove({ _id: req.params.cardId });
-        res.send({ data: cardForDel });
+        const user = req.user._id;
+
+        const cardOwner = JSON.stringify(card.owner).slice(1, -1);
+
+        if (user !== cardOwner) {
+          throw new ForbiddenError('Это чужая карта');
+        } else {
+          const cardForDel = await Card.findByIdAndRemove({
+            _id: req.params.cardId,
+          });
+          res.send({ data: cardForDel });
+        }
       }
     }
-  } catch (error) {
-    res.status(404).send({ message: 'Неподходящий формат ID карточки' });
+  } catch (err) {
+    next(err);
   }
 };
 
 /** Контролер добавления лайка карточке */
-module.exports.addLike = async (req, res) => {
+module.exports.addLike = async (req, res, next) => {
   try {
-    const card = await Card.findByIdAndUpdate(
-      req.params.cardId,
-      { $addToSet: { likes: req.user._id } },
-      { new: true },
-    );
-    if (!card) {
-      res.status(404).send({ message: 'Такая карта не существует' });
+    if (!regIdCheck(req.params.cardId)) {
+      throw new NotFoundError('Неподходящий формат ID карточки');
     } else {
-      res.send({ data: card });
+      const card = await Card.findByIdAndUpdate(
+        req.params.cardId,
+        { $addToSet: { likes: req.user._id } },
+        { new: true },
+      );
+      if (!card) {
+        throw new NotFoundError('Такая карта не существует');
+      } else {
+        res.send({ data: card });
+      }
     }
-  } catch (error) {
-    res.status(404).send({ message: 'Неподходящий формат ID карточки' });
+  } catch (err) {
+    next(err);
   }
 };
 
 /** Контролер добавления лайка карточке */
-module.exports.deleteLike = async (req, res) => {
+module.exports.deleteLike = async (req, res, next) => {
   try {
-    const card = await Card.findByIdAndUpdate(
-      req.params.cardId,
-      { $pull: { likes: req.user._id } }, // убрать _id из массива
-      { new: true },
-    );
-    if (!card) {
-      res.status(404).send({ message: 'Такая карта не существует' });
+    if (!regIdCheck(req.params.cardId)) {
+      throw new NotFoundError('Неподходящий формат ID карточки');
     } else {
-      res.send({ data: card });
+      const card = await Card.findByIdAndUpdate(
+        req.params.cardId,
+        { $pull: { likes: req.user._id } },
+        { new: true },
+      );
+      if (!card) {
+        throw new NotFoundError('Такая карта не существует');
+      } else {
+        res.send({ data: card });
+      }
     }
-  } catch (error) {
-    res.status(404).send({ message: 'Неподходящий формат ID карточки' });
+  } catch (err) {
+    next(err);
   }
 };

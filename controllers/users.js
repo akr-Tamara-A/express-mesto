@@ -1,129 +1,121 @@
 const bcrypt = require('bcryptjs');
 
+const isEmail = require('validator/lib/isEmail');
 const User = require('../models/user');
+
+const BadRequestError = require('../errors/BadRequestError');
+const NotFoundError = require('../errors/NotFoundError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
+
 const { genereteToken } = require('../utils/genereteToken');
 
 /** Контролер запроса всех пользователей */
-module.exports.getUsers = async (req, res) => {
+module.exports.getUsers = async (req, res, next) => {
   try {
     const users = await User.find({});
     res.send({ data: users });
-  } catch (error) {
-    res.status(500).send({ message: 'Ошибка на сервере' });
+  } catch (err) {
+    next(err);
   }
 };
 
 /** Контролер запроса пользователя */
-module.exports.getUser = async (req, res) => {
+module.exports.getUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id).select('+password');
 
     if (!user) {
-      res.status(404).send({ message: 'Такой пользователь не существует' });
+      throw new NotFoundError('Такой пользователь не существует');
     } else {
       res.send({ data: user });
     }
-  } catch (error) {
-    res.status(404).send({ message: 'Неподходящий формат ID' });
+  } catch (err) {
+    next(err);
   }
 };
 
 /** Контролер создания нового пользователя */
-module.exports.createUser = async (req, res) => {
+module.exports.createUser = async (req, res, next) => {
   const { email, password } = req.body;
-  if (!password) {
-    res.status(400).send({ message: 'Невалидные данные' });
-    return;
-  }
+
   try {
+    if (!password) {
+      throw new BadRequestError('Невалидные данные');
+    }
     const hash = await bcrypt.hash(password, 10);
 
     const newUser = await new User({
       email,
       password: hash,
-    }, (err) => Promise.reject(new Error(err)));
+    });
 
     const validateError = newUser.validateSync();
 
     if (validateError) {
-      res.status(400).send({ message: validateError.message });
+      throw new BadRequestError('Невалидные данные');
     } else {
       await newUser.save();
       res.send({ data: newUser });
     }
-  } catch (error) {
-    if (error.name === 'MongoError') {
-      res.status(409).send({ message: 'Такой email уже используется' });
-    } else {
-      res.status(500).send({ message: 'Ошибка на сервере' });
-    }
+  } catch (err) {
+    next(err);
   }
 };
 
 /** Контролер логина пользователя */
-module.exports.loginUser = (req, res) => {
-  const { email, password } = req.body;
-
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      res.send({
-        token: genereteToken(user._id),
-      });
-    })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
-    });
-};
-
-/** Контролер удаления пользователя */
-module.exports.deleteUser = async (req, res) => {
+module.exports.loginUser = async (req, res, next) => {
   try {
-    const user = await User.findByIdAndRemove(req.params.id);
+    const { email, password } = req.body;
 
-    if (!user) {
-      res.status(404).send({ message: 'Такой пользователь не существует' });
+    if (!isEmail(email)) {
+      throw new BadRequestError('Невалидные данные');
     } else {
-      res.send({ data: user });
+      const user = await User.findUserByCredentials(email, password);
+      if (!user) {
+        throw new UnauthorizedError('Необходима авторизация');
+      } else {
+        res.send({ token: genereteToken(user._id) });
+      }
     }
-  } catch (error) {
-    res.status(404).send({ message: 'Неподходящий формат ID' });
+  } catch (err) {
+    next(err);
   }
 };
 
 /** Контролер редактирования данных пользователя */
-module.exports.patchUser = async (req, res) => {
+module.exports.patchUser = async (req, res, next) => {
   try {
     const user = await User.findByIdAndUpdate(
-      { _id: req.params.id },
+      { _id: req.user._id },
       req.body,
       { new: true },
     );
 
     if (!user) {
-      res.status(404).send({ message: 'Такой пользователь не существует' });
+      throw new NotFoundError('Такой пользователь не существует');
     } else {
       res.send({ data: user });
     }
-  } catch (error) {
-    res.status(500).send({ message: 'Ошибка на сервере' });
+  } catch (err) {
+    next(err);
   }
 };
 
 /** Контролер редактирования аватара пользователя */
-module.exports.patchUserAvatar = async (req, res) => {
+module.exports.patchUserAvatar = async (req, res, next) => {
   try {
     const user = await User.findByIdAndUpdate(
-      { _id: req.params.id },
+      { _id: req.user._id },
       req.body,
       { new: true },
     );
 
     if (!user) {
-      res.status(404).send({ message: 'Такой пользователь не существует' });
+      throw new NotFoundError('Такой пользователь не существует');
     } else {
       res.send({ data: user });
     }
-  } catch (error) {
-    res.status(500).send({ message: 'Ошибка на сервере' });
+  } catch (err) {
+    next(err);
   }
 };

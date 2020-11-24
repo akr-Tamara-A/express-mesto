@@ -1,27 +1,29 @@
 const jwt = require('jsonwebtoken');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-const handleAuthError = (res) => res.status(403).send({ message: 'Необходима авторизация' });
-
 const extractBearerToken = (header) => header.replace('Bearer ', '');
 
-module.exports = function (req, res, next) {
-  const { authorization } = req.headers;
-
-  if (!authorization || !authorization.startsWith('Bearer ')) {
-    return handleAuthError(res);
-  }
-
-  const token = extractBearerToken(authorization);
-  let payload;
-  const jwtSecret = NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret';
+module.exports = async function (req, res, next) {
   try {
-    payload = jwt.verify(token, jwtSecret);
-  } catch (err) {
-    return handleAuthError(res);
-  }
+    const { authorization } = req.headers;
 
-  req.user = payload;
-  return next();
+    if (!authorization || !authorization.startsWith('Bearer ')) {
+      throw new UnauthorizedError('Необходима авторизация');
+    } else {
+      const token = await extractBearerToken(authorization);
+      const jwtSecret = NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret';
+      jwt.verify(token, jwtSecret, (err, decoded) => {
+        if (err) {
+          throw new UnauthorizedError('Необходима авторизация');
+        } else {
+          req.user = decoded;
+          next();
+        }
+      });
+    }
+  } catch (err) {
+    next(err);
+  }
 };

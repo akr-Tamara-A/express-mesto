@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 require('dotenv').config();
 
 const routes = require('./routes/index');
@@ -22,12 +23,14 @@ mongoose.connect('mongodb://localhost:27017/mestodb2', {
 });
 
 /** Обработка запросов */
+app.use(requestLogger);
 app.use(routes);
 
 /** Обработка ошибок */
+app.use(errorLogger);
 app.use(errors());
-
 app.use((err, req, res, next) => {
+  console.log(err);
   let { statusCode = 500, message } = err;
 
   if (err.errors && err.errors.email.properties.type === 'unique') {

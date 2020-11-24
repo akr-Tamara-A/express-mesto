@@ -6,7 +6,6 @@ const cardsRouter = require('./cards');
 
 const auth = require('../middlewares/auth');
 const { userValidation } = require('../middlewares/validation');
-const NotFoundError = require('../errors/NotFoundError');
 
 /** Обработка логина пользователя */
 router.post('/signin', userValidation, loginUser);
@@ -25,7 +24,7 @@ router.use('/', cardsRouter);
 
 /** Обработка неправильного запроса */
 router.use((req, res, next) => {
-  Promise.reject(new NotFoundError('Запрашиваемый ресурс не найден'));
+  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
   next();
 });
 

@@ -11,7 +11,7 @@ const {
 
 const {
   cardValidation,
-  idValidation,
+  cardIdValidation,
 } = require('../middlewares/validation');
 
 /** Обработка запроса всех карточек */
@@ -21,15 +21,15 @@ router.get('/cards', getCards);
 router.post('/cards', cardValidation, createCard);
 
 /** Обработка запроса отдельной карточки */
-router.get('/cards/:cardId', idValidation, getCard);
+router.get('/cards/:cardId', cardIdValidation, getCard);
 
 /** Обработка удаления отдельной карточки */
-router.delete('/cards/:cardId', idValidation, deleteCard);
+router.delete('/cards/:cardId', cardIdValidation, deleteCard);
 
 /** Обработка добавления лайка карточке */
-router.put('/cards/:cardId/likes', idValidation, addLike);
+router.put('/cards/:cardId/likes', cardIdValidation, addLike);
 
 /** Обработка удаления лайка карточке */
-router.delete('/cards/:cardId/likes', idValidation, deleteLike);
+router.delete('/cards/:cardId/likes', cardIdValidation, deleteLike);
 
 module.exports = router;

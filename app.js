@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 require('dotenv').config();
 
 const routes = require('./routes/index');
@@ -24,9 +25,10 @@ mongoose.connect('mongodb://localhost:27017/mestodb2', {
 app.use(routes);
 
 /** Обработка ошибок */
+app.use(errors());
+
 app.use((err, req, res, next) => {
   let { statusCode = 500, message } = err;
-  console.log(err);
 
   if (err.errors && err.errors.email.properties.type === 'unique') {
     statusCode = 409;
